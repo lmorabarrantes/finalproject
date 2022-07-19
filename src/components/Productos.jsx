@@ -35,6 +35,9 @@ const Productos = () => {
   const [error, setError] = useState(null);
   const [id, setId] = useState(null);
   const [ModoEdicion, setModoEdicion] = useState(false);
+  const [obtenerBusqueda, setObtenerBusqueda] = useState(null);
+  const [arrayBusquedaEditado, setArrayBusquedaEditado] = useState(null);
+
   //modal alerta
   const [modalAlert, setModalAlert] = useState(false);
   useEffect(() => {
@@ -51,13 +54,13 @@ const Productos = () => {
     obtenerDatosProductos();
   }, []);
   //aliminar
-  const eliminarProducto = async (id) => {
+  /*   const eliminarProducto = async (id) => {
     try {
       await deleteDoc(doc(db, "productos", id));
       const arrayEliminado = productos.filter((producto) => producto.id !== id);
       setProductos(arrayEliminado);
     } catch (error) {}
-  };
+  }; */
   //agregar Producto
 
   const agregarProducto = async (e) => {
@@ -156,6 +159,21 @@ const Productos = () => {
     } catch (error) {}
   };
 
+  const handleChangeBuscador = (e) => {
+    e.preventDefault();
+    const arrayEditadoBuscado = productos.filter(
+      (item) =>
+        item.nombre.toString().toLowerCase() ===
+        obtenerBusqueda.toString().toLowerCase()
+    );
+
+    if (obtenerBusqueda === []) {
+      setArrayBusquedaEditado([]);
+    } else {
+      setArrayBusquedaEditado(arrayEditadoBuscado);
+    }
+  };
+
   return (
     <>
       <div className="h-w-screen h-screen bg-white">
@@ -164,66 +182,136 @@ const Productos = () => {
           setModalAlert={setModalAlert}
           error={error}
         />
+
         <div className="">
           <div className="flex mb-4 flex-col md:flex-row">
             <div className="w-full md:w-2/3  border bg-gradient-to-r from-gray-500 to-gray-400 shadow-sm px-5 h-full">
               <h3 className=" text-white font-bold">
-                {productos.map((products) => (
-                  <div key={products.id} className="uppercase border my-5 p-3">
-                    <p className="text-teal-500">{products.nombre} </p>
-                    {products.cantidad < 10 ? (
-                      <li className="text-white md:text-xl">
-                        Cantidad Disponibles:{" "}
-                        <span className="md:text-2xl text-redO ">
-                          {products.cantidad}{" "}
-                        </span>
-                        <span className=" bg-orange-400 text-white text-sm font-bold rounded-md">
-                          ¡Quedan pocos Disponibles!
-                        </span>
-                      </li>
-                    ) : (
-                      <li className="text-white text-lg ">
-                        Cantidad Disponibles:{" "}
-                        <span className="text-xl text-sky-700">
-                          {products.cantidad}{" "}
-                        </span>
-                      </li>
-                    )}
-                    <button
+                {obtenerBusqueda && arrayBusquedaEditado
+                  ? arrayBusquedaEditado.map((item) => (
+                      <div key={item.id} className="uppercase border my-5 p-3">
+                        <p className="text-teal-500">{item.nombre} </p>
+                        {item.cantidad < 10 ? (
+                          <li className="text-white md:text-xl">
+                            Cantidad Disponibles:{" "}
+                            <span className="md:text-2xl text-redO ">
+                              {item.cantidad}{" "}
+                            </span>
+                            <span className=" bg-orange-400 text-white text-sm font-bold rounded-md">
+                              ¡Quedan pocos Disponibles!
+                            </span>
+                          </li>
+                        ) : (
+                          <li className="text-white text-lg ">
+                            Cantidad Disponibles:{" "}
+                            <span className="text-xl text-sky-700">
+                              {item.cantidad}{" "}
+                            </span>
+                          </li>
+                        )}
+                        {/*  <button
+                  onClick={() => eliminarProducto(products.id)}
+                  className="float-right bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-2 border-b-4 border-blue-700 hover:border-blue-500 rounded"
+                >
+                  Eliminar
+                </button> */}
+                        <button
+                          onClick={() => activarEdicion(item)}
+                          className="float-right mr-2 bg-orange-500 hover:bg-orange-400 text-white font-bold py-2 px-2 border-b-4 border-orange-700 hover:border-orange-500 rounded"
+                        >
+                          Editar
+                        </button>
+                        <li>categoria: {item.categoria} </li>
+
+                        <li className="text-red-400">
+                          precio aiva:<span className="text-teal-500">$</span>{" "}
+                          {item.precio}{" "}
+                        </li>
+
+                        <li className="text-orange-400">
+                          impuesto asignado: {item.impuesto}{" "}
+                          <span className="text-teal-500">%</span>
+                        </li>
+                        <li className="text-green-400">
+                          precio venta: <span className="text-teal-500">$</span>{" "}
+                          {(Number(item.impuesto) / 100) * Number(item.precio) +
+                            Number(item.precio)}
+                        </li>
+                      </div>
+                    ))
+                  : productos.map((products) => (
+                      <div
+                        key={products.id}
+                        className="uppercase border my-5 p-3"
+                      >
+                        <p className="text-teal-500">{products.nombre} </p>
+                        {products.cantidad < 10 ? (
+                          <li className="text-white md:text-xl">
+                            Cantidad Disponibles:{" "}
+                            <span className="md:text-2xl text-redO ">
+                              {products.cantidad}{" "}
+                            </span>
+                            <span className=" bg-orange-400 text-white text-sm font-bold rounded-md">
+                              ¡Quedan pocos Disponibles!
+                            </span>
+                          </li>
+                        ) : (
+                          <li className="text-white text-lg ">
+                            Cantidad Disponibles:{" "}
+                            <span className="text-xl text-sky-700">
+                              {products.cantidad}{" "}
+                            </span>
+                          </li>
+                        )}
+                        {/*  <button
                       onClick={() => eliminarProducto(products.id)}
                       className="float-right bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-2 border-b-4 border-blue-700 hover:border-blue-500 rounded"
                     >
                       Eliminar
-                    </button>
-                    <button
-                      onClick={() => activarEdicion(products)}
-                      className="float-right mr-2 bg-orange-500 hover:bg-orange-400 text-white font-bold py-2 px-2 border-b-4 border-orange-700 hover:border-orange-500 rounded"
-                    >
-                      Editar
-                    </button>
-                    <li>categoria: {products.categoria} </li>
+                    </button> */}
+                        <button
+                          onClick={() => activarEdicion(products)}
+                          className="float-right mr-2 bg-orange-500 hover:bg-orange-400 text-white font-bold py-2 px-2 border-b-4 border-orange-700 hover:border-orange-500 rounded"
+                        >
+                          Editar
+                        </button>
+                        <li>categoria: {products.categoria} </li>
 
-                    <li className="text-red-400">
-                      precio aiva:<span className="text-teal-500">$</span>{" "}
-                      {products.precio}{" "}
-                    </li>
+                        <li className="text-red-400">
+                          precio aiva:<span className="text-teal-500">$</span>{" "}
+                          {products.precio}{" "}
+                        </li>
 
-                    <li className="text-orange-400">
-                      impuesto asignado: {products.impuesto}{" "}
-                      <span className="text-teal-500">%</span>
-                    </li>
-                    <li className="text-green-400">
-                      precio venta: <span className="text-teal-500">$</span>{" "}
-                      {(Number(products.impuesto) / 100) *
-                        Number(products.precio) +
-                        Number(products.precio)}
-                    </li>
-                  </div>
-                ))}
+                        <li className="text-orange-400">
+                          impuesto asignado: {products.impuesto}{" "}
+                          <span className="text-teal-500">%</span>
+                        </li>
+                        <li className="text-green-400">
+                          precio venta: <span className="text-teal-500">$</span>{" "}
+                          {(Number(products.impuesto) / 100) *
+                            Number(products.precio) +
+                            Number(products.precio)}
+                        </li>
+                      </div>
+                    ))}
               </h3>
               <ul className="list-group"></ul>
             </div>
             <div className="w-full md:w-1/3 text-center">
+              <form onSubmit={handleChangeBuscador}>
+                <input
+                  onChange={(e) => setObtenerBusqueda(e.target.value)}
+                  className="border bg-slate-300 text-red text-lg rounded-md p-2"
+                  type="text"
+                  placeholder="Buscador"
+                />
+                <button
+                  type="submit"
+                  className="bg-blue-400 rounded-md p-4 mt-5"
+                >
+                  Buscar
+                </button>
+              </form>
               <h3 className="text-teal-500 font-bold text-2xl py-4">
                 AGREGAR PRODUCTOS
               </h3>

@@ -11,6 +11,10 @@ module.exports = {
         yellow: "rgb(243, 240, 185)",
         yellowfuerte: "#fde047",
       },
+      backgroundImage: {
+        "hero-lg": "url('/src/img/buscar.png')",
+        "hero-sm": "url('/storage/img/sys/sm-hero.jpg')",
+      },
     },
   },
   plugins: [],
